@@ -69,16 +69,32 @@ function FormPlanoManual() {
       return;
     }
 
+    // 🧠 Obtener el usuario desde localStorage - esto quedaria
+    // const usuario = JSON.parse(localStorage.getItem('usuario'));
+    // const usuario_id = usuario?.id;
+
+    // const payload = {
+    //   plano_id: planoId,
+    //   ubicacion_id: parseInt(ubicacionId),
+    //   cantidad: parseInt(cantidad),
+    //   usuario_id: usuario_id,
+    // };
+
     try {
+      // esto vuela
       const payload = {
         plano_id: planoId,
         ubicacion_id: parseInt(ubicacionId),
         cantidad: parseInt(cantidad),
       };
 
+      // Actualizo stock
       await axios.post('http://localhost:3000/api/planoxubicacion/actualizar-stock', payload);
 
-      setMensaje('✅ Stock actualizado con éxito');
+      // Registro ingreso
+      await axios.post('http://localhost:3000/api/ingresos', payload);
+
+      setMensaje('✅ Stock actualizado e ingreso registrado con éxito');
       setPlanoCodigo('');
       setPlanoId(null);
       setUbicacionCodigo('');
@@ -86,13 +102,13 @@ function FormPlanoManual() {
       setDenominacion('');
       setCantidad('');
     } catch {
-      setError('❌ Error al actualizar stock');
+      setError('❌ Error al actualizar stock o registrar ingreso');
     }
   };
 
   return (
     <div className="bg-zinc-900 min-h-screen flex justify-center items-center p-6">
-      <div className="bg-zinc-800 rounded-lg border-2 border-orange-500 p-8 w-full max-w-2xl"> {/* Ajustado a max-w-2xl, puedes cambiarlo */}
+      <div className="bg-zinc-800 rounded-lg border-2 border-orange-500 p-8 w-full max-w-2xl">
         <h2 className="text-2xl font-bold text-center text-orange-500 mb-8 pt-2">Ingreso de Material</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -124,7 +140,7 @@ function FormPlanoManual() {
               type="text"
               value={denominacion}
               readOnly
-              className="w-full bg-zinc-700 text-gray-400 rounded-md border border-zinc-600 py-2 px-3 cursor-not-allowed" // Texto gris para readOnly
+              className="w-full bg-zinc-700 text-gray-400 rounded-md border border-zinc-600 py-2 px-3 cursor-not-allowed"
               placeholder="Se completa automáticamente"
             />
           </div>
