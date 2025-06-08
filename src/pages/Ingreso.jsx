@@ -1,5 +1,191 @@
+// import { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import Swal from 'sweetalert2';
+
+// function FormPlanoManual() {
+//   const [planoCodigo, setPlanoCodigo] = useState('');
+//   const [planoId, setPlanoId] = useState(null);
+//   const [ubicacionCodigo, setUbicacionCodigo] = useState('');
+//   const [ubicacionId, setUbicacionId] = useState('');
+//   const [denominacion, setDenominacion] = useState('');
+//   const [cantidad, setCantidad] = useState('');
+//   const [ubicaciones, setUbicaciones] = useState([]); // ← NUEVO
+
+//   // Cargar todas las ubicaciones
+//   useEffect(() => {
+//     async function fetchUbicaciones() {
+//       try {
+//         const res = await axios.get('http://localhost:3000/api/ubicaciones');
+//         setUbicaciones(res.data.body || []);
+//       } catch (err) {
+//         console.error('Error al cargar ubicaciones:', err);
+//         Swal.fire({
+//           icon: 'error',
+//           title: 'Error al cargar ubicaciones',
+//           text: 'No se pudieron obtener las ubicaciones desde el servidor.'
+//         });
+//       }
+//     }
+
+//     fetchUbicaciones();
+//   }, []);
+
+//   // Obtener denominación desde código de plano
+//   useEffect(() => {
+//     if (planoCodigo.trim() === '') {
+//       setDenominacion('');
+//       setPlanoId(null);
+//       return;
+//     }
+
+//     async function fetchDenominacion() {
+//       try {
+//         const res = await axios.get(`http://localhost:3000/api/planos/numero/denominacion/${planoCodigo}`);
+//         const data = res.data?.body;
+//         if (data) {
+//           setDenominacion(data.denominacion || '');
+//           setPlanoId(data.plano_id || null);
+//         } else {
+//           setDenominacion('');
+//           setPlanoId(null);
+//         }
+//       } catch (err) {
+//         console.error('Error al obtener denominación:', err);
+//         setDenominacion('');
+//         setPlanoId(null);
+//       }
+//     }
+
+//     fetchDenominacion();
+//   }, [planoCodigo]);
+
+//   // Manejador del formulario
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!planoId || ubicacionId === '' || cantidad.trim() === '' || isNaN(parseInt(cantidad))) {
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Campos incompletos',
+//         text: 'Por favor completá todos los campos obligatorios correctamente.'
+//       });
+//       return;
+//     }
+
+//     try {
+//       const usuario = JSON.parse(localStorage.getItem('usuario'));
+//       const usuario_id = usuario?.id;
+
+//       const payload = {
+//         plano_id: planoId,
+//         ubicacion_id: parseInt(ubicacionId),
+//         cantidad: parseInt(cantidad),
+//       };
+
+//       await axios.post('http://localhost:3000/api/planoxubicacion/actualizar-stock', payload);
+//       await axios.post('http://localhost:3000/api/ingresos', payload);
+//       await axios.post('http://localhost:3000/api/historiales', { ...payload, usuario_id });
+
+//       Swal.fire({
+//         icon: 'success',
+//         title: 'Operación exitosa',
+//         text: 'Se ingresó correctamente.'
+//       });
+
+//       // Resetear formulario
+//       setPlanoCodigo('');
+//       setPlanoId(null);
+//       setUbicacionCodigo('');
+//       setUbicacionId('');
+//       setDenominacion('');
+//       setCantidad('');
+//     } catch (err) {
+//       console.error('Error en la operación:', err);
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Error',
+//         text: 'Ocurrió un problema al guardar los datos. Por favor, intentá nuevamente.'
+//       });
+//     }
+//   };
+
+//   return (
+//     <div className="bg-zinc-900 min-h-screen flex justify-center items-center p-6">
+//       <div className="bg-zinc-800 rounded-lg border-2 border-orange-500 p-8 w-full max-w-2xl">
+//         <h2 className="text-2xl font-bold text-center text-orange-500 mb-8 pt-2">Ingreso de Material</h2>
+
+//         <form onSubmit={handleSubmit} className="space-y-6">
+//           <div>
+//             <label className="block text-sm font-medium mb-1 text-yellow-200">Plano</label>
+//             <input
+//               type="text"
+//               value={planoCodigo}
+//               onChange={(e) => setPlanoCodigo(e.target.value)}
+//               className="w-full bg-zinc-700 text-white rounded-md border border-zinc-600 py-2 px-3 focus:outline-none focus:border-orange-500"
+//               placeholder="Ej: 1091503"
+//             />
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium mb-1 text-yellow-200">Ubicación</label>
+//             <select
+//               value={ubicacionId}
+//               onChange={(e) => {
+//                 const selected = ubicaciones.find(u => u.ubicacion_id === parseInt(e.target.value));
+//                 setUbicacionId(e.target.value);
+//                 setUbicacionCodigo(selected?.codigo || '');
+//               }}
+//               className="w-full bg-zinc-700 text-white rounded-md border border-zinc-600 py-2 px-3 focus:outline-none focus:border-orange-500"
+//             >
+//               <option value="">Seleccionar ubicación</option>
+//               {ubicaciones.map((ubic) => (
+//                 <option key={ubic.ubicacion_id} value={ubic.ubicacion_id}>
+//                   {ubic.codigo}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium mb-1 text-yellow-200">Denominación</label>
+//             <input
+//               type="text"
+//               value={denominacion}
+//               readOnly
+//               className="w-full bg-zinc-700 text-gray-400 rounded-md border border-zinc-600 py-2 px-3 cursor-not-allowed"
+//               placeholder="Se completa automáticamente"
+//             />
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium mb-1 text-yellow-200">Cantidad</label>
+//             <input
+//               type="number"
+//               value={cantidad}
+//               onChange={(e) => setCantidad(e.target.value)}
+//               className="w-full bg-zinc-700 text-white rounded-md border border-zinc-600 py-2 px-3 focus:outline-none focus:border-orange-500"
+//               placeholder="Ej: 100"
+//             />
+//           </div>
+
+//           <button
+//             type="submit"
+//             className="w-full bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75"
+//           >
+//             Ingresar
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default FormPlanoManual;
+
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 function FormPlanoManual() {
   const [planoCodigo, setPlanoCodigo] = useState('');
@@ -8,8 +194,25 @@ function FormPlanoManual() {
   const [ubicacionId, setUbicacionId] = useState('');
   const [denominacion, setDenominacion] = useState('');
   const [cantidad, setCantidad] = useState('');
-  const [mensaje, setMensaje] = useState('');
-  const [error, setError] = useState('');
+  const [ubicaciones, setUbicaciones] = useState([]);
+
+  useEffect(() => {
+    async function fetchUbicaciones() {
+      try {
+        const res = await axios.get('http://localhost:3000/api/ubicaciones');
+        setUbicaciones(res.data.body || []);
+      } catch (err) {
+        console.error('Error al cargar ubicaciones:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar ubicaciones',
+          text: 'No se pudieron obtener las ubicaciones desde el servidor.'
+        });
+      }
+    }
+
+    fetchUbicaciones();
+  }, []);
 
   useEffect(() => {
     if (planoCodigo.trim() === '') {
@@ -21,14 +224,16 @@ function FormPlanoManual() {
     async function fetchDenominacion() {
       try {
         const res = await axios.get(`http://localhost:3000/api/planos/numero/denominacion/${planoCodigo}`);
-        if (res.data?.body) {
-          setDenominacion(res.data.body.denominacion || '');
-          setPlanoId(res.data.body.plano_id || null);
+        const data = res.data?.body;
+        if (data) {
+          setDenominacion(data.denominacion || '');
+          setPlanoId(data.plano_id || null);
         } else {
           setDenominacion('');
           setPlanoId(null);
         }
-      } catch {
+      } catch (err) {
+        console.error('Error al obtener denominación:', err);
         setDenominacion('');
         setPlanoId(null);
       }
@@ -37,74 +242,59 @@ function FormPlanoManual() {
     fetchDenominacion();
   }, [planoCodigo]);
 
-  useEffect(() => {
-    if (ubicacionCodigo.trim() === '') {
-      setUbicacionId('');
-      return;
-    }
-
-    async function fetchUbicacion() {
-      try {
-        const res = await axios.get(`http://localhost:3000/api/ubicaciones/ubicacion/codigos/${ubicacionCodigo}`);
-        if (res.data?.body) {
-          setUbicacionId(res.data.body.ubicacion_id || '');
-        } else {
-          setUbicacionId('');
-        }
-      } catch {
-        setUbicacionId('');
-      }
-    }
-
-    fetchUbicacion();
-  }, [ubicacionCodigo]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMensaje('');
-    setError('');
 
     if (!planoId || ubicacionId === '' || cantidad.trim() === '' || isNaN(parseInt(cantidad))) {
-      setError('Completa los campos obligatorios: plano válido, ubicación y cantidad');
+      Swal.fire({
+        icon: 'error',
+        title: 'Campos incompletos',
+        text: 'Por favor completá todos los campos obligatorios correctamente.'
+      });
       return;
     }
 
-    // 🧠 Obtener el usuario desde localStorage - esto quedaria
-    // const usuario = JSON.parse(localStorage.getItem('usuario'));
-    // const usuario_id = usuario?.id;
-
-    // const payload = {
-    //   plano_id: planoId,
-    //   ubicacion_id: parseInt(ubicacionId),
-    //   cantidad: parseInt(cantidad),
-    //   usuario_id: usuario_id,
-    // };
-
     try {
-      // esto vuela
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const usuario_id = usuario?.id;
+
       const payload = {
         plano_id: planoId,
         ubicacion_id: parseInt(ubicacionId),
         cantidad: parseInt(cantidad),
       };
 
-      // Actualizo stock
       await axios.post('http://localhost:3000/api/planoxubicacion/actualizar-stock', payload);
-
-      // Registro ingreso
       await axios.post('http://localhost:3000/api/ingresos', payload);
+      await axios.post('http://localhost:3000/api/historiales', { ...payload, usuario_id });
 
-      setMensaje('✅ Stock actualizado e ingreso registrado con éxito');
+      Swal.fire({
+        icon: 'success',
+        title: 'Operación exitosa',
+        text: 'Se ingresó correctamente.'
+      });
+
       setPlanoCodigo('');
       setPlanoId(null);
       setUbicacionCodigo('');
       setUbicacionId('');
       setDenominacion('');
       setCantidad('');
-    } catch {
-      setError('❌ Error al actualizar stock o registrar ingreso');
+    } catch (err) {
+      console.error('Error en la operación:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un problema al guardar los datos. Por favor, intentá nuevamente.'
+      });
     }
   };
+
+  // Buscar y asignar ubicaciónId cuando se escribe un código
+  useEffect(() => {
+    const ubic = ubicaciones.find(u => u.codigo === ubicacionCodigo);
+    setUbicacionId(ubic?.ubicacion_id || '');
+  }, [ubicacionCodigo, ubicaciones]);
 
   return (
     <div className="bg-zinc-900 min-h-screen flex justify-center items-center p-6">
@@ -126,12 +316,17 @@ function FormPlanoManual() {
           <div>
             <label className="block text-sm font-medium mb-1 text-yellow-200">Ubicación</label>
             <input
-              type="text"
+              list="ubicaciones"
               value={ubicacionCodigo}
               onChange={(e) => setUbicacionCodigo(e.target.value)}
               className="w-full bg-zinc-700 text-white rounded-md border border-zinc-600 py-2 px-3 focus:outline-none focus:border-orange-500"
-              placeholder="Ej: 0A0101"
+              placeholder="Escribí el código"
             />
+            <datalist id="ubicaciones">
+              {ubicaciones.map((ubic) => (
+                <option key={ubic.ubicacion_id} value={ubic.codigo} />
+              ))}
+            </datalist>
           </div>
 
           <div>
@@ -156,14 +351,11 @@ function FormPlanoManual() {
             />
           </div>
 
-          {mensaje && <p className="text-green-100 bg-green-700 px-4 py-2 rounded-md">{mensaje}</p>}
-          {error && <p className="text-red-100 bg-red-700 px-4 py-2 rounded-md">{error}</p>}
-
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75"
           >
-            Actualizar Stock
+            Ingresar
           </button>
         </form>
       </div>

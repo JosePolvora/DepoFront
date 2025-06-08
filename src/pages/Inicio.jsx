@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios'; // Asegúrate de tener axios instalado
 import logo from '../assets/imagenes/logoJosemadesing.png';
+import whatsapp from "../assets/imagenes/whatsapp.png";
+import { FaSignInAlt, FaEnvelope } from "react-icons/fa";
 
 export default function Inicio() {
   const [mostrarChat, setMostrarChat] = useState(false);
@@ -15,7 +17,7 @@ export default function Inicio() {
 
     // Añadir mensaje del usuario al historial
     setHistorial((prev) => [...prev, { from: 'user', text: mensaje }]);
-    
+
     try {
       // Llamar al backend para obtener respuesta
       const response = await axios.post('http://localhost:3000/api/ai/ask', { question: mensaje });
@@ -48,15 +50,22 @@ export default function Inicio() {
   return (
     <div className="min-h-screen bg-orange-50 flex flex-col">
       {/* Header */}
+     
+
       <header className="bg-gradient-to-r from-[#1A1A1A] to-orange-500 shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <img src={logo} alt="Logo" className="h-40 w-auto" />
-            <h1 className="text-xl font-bold text-white drop-shadow"></h1>
           </div>
-          <nav className="space-x-4">
-            <a href="/login" className="text-white hover:text-yellow-100 font-semibold font-poppins">Iniciar Sesión</a>
-            <a href="#footer" className="text-white hover:text-yellow-100 font-semibold font-poppins">Contacto</a>
+          <nav className="space-x-6 flex items-center">
+            <a href="/login" className="flex items-center text-white hover:text-yellow-100 font-semibold space-x-2">
+              <FaSignInAlt className="text-xl" />
+              <span className="hidden sm:inline font-poppins">Iniciar Sesión</span>
+            </a>
+            <a href="#footer" className="flex items-center text-white hover:text-yellow-100 font-semibold space-x-2">
+              <FaEnvelope className="text-xl" />
+              <span className="hidden sm:inline font-poppins">Contacto</span>
+            </a>
           </nav>
         </div>
       </header>
@@ -141,9 +150,9 @@ export default function Inicio() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Síguenos</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Facebook</a></li>
-              <li><a href="#" className="hover:underline">Instagram</a></li>
-              <li><a href="#" className="hover:underline">LinkedIn</a></li>
+              <li><a href="https://www.facebook.com/" target='_blanck' className="hover:underline">Facebook</a></li>
+              <li><a href="https://www.instagram.com/" target='_blanck' className="hover:underline">Instagram</a></li>
+              <li><a href="https://ar.linkedin.com/" target='_blanck' className="hover:underline">LinkedIn</a></li>
             </ul>
           </div>
         </div>
@@ -153,7 +162,7 @@ export default function Inicio() {
           <p className="mt-1">Desarrollado por JosemaDesign</p>
         </div>
       </footer>
-      
+
       {/* Botón para abrir chat */}
       <div className="fixed bottom-6 right-6 z-50">
         <button
@@ -202,6 +211,22 @@ export default function Inicio() {
           </button>
         </div>
       )}
+
+      <a
+        href="https://wa.me/5493513374719"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 left-6 z-50"
+      >
+        <img
+          src={whatsapp}
+          alt="WhatsApp"
+          className="w-14 h-14 ml-5 shadow-lg hover:scale-110 transition-transform duration-200"
+        />
+      </a>
+
+
+
     </div>
   );
 }
