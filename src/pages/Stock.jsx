@@ -19,15 +19,15 @@ export default function ConsultaStock() {
         const response = await axios.get('http://localhost:3000/api/planoStock');
 
         if (response.data.ok && Array.isArray(response.data.body)) {
-          console.log('Datos planos:', response.data.body); // ✅ Log seguro
+          console.log('Datos planos:', response.data.body);
           setPlanos(response.data.body || []);
 
         } else {
-          console.warn('Respuesta inesperada de la API:', response.data); // ⚠️ En caso de error lógico
+          console.warn('Respuesta inesperada de la API:', response.data); 
         }
 
       } catch (error) {
-        console.error('Error al obtener planos:', error); // ❌ En caso de error de red
+        console.error('Error al obtener planos:', error);
       }
     };
 
@@ -97,7 +97,8 @@ export default function ConsultaStock() {
 
                     <td
                       className="px-6 py-4 text-sm text-orange-400 underline cursor-pointer hover:text-orange-300"
-                      onClick={() => navigate('/consultapieza')}
+                      onClick={() => navigate('/consultapieza/')}
+                      // onClick={() => navigate(`/consultapieza/${plano.plano_id}`)}
                     >
                       {plano.plano}
                     </td>

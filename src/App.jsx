@@ -31,7 +31,7 @@ function App() {
         <Route path="/ingreso" element={<Ingreso />} />
         
         <Route path="/consultapieza" element={<Consultapieza />} />
-        <Route path="/consultapieza/:id" element={<Consultapieza />} />
+        <Route path="/consultapieza/:id?" element={<Consultapieza />} />
         
         <Route path="/consultaubicacion" element={<Consultaubicacion />} />
         <Route path="/geminiask" element={<GeminiAsk />} />

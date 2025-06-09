@@ -50,7 +50,7 @@ export default function Inicio() {
   return (
     <div className="min-h-screen bg-orange-50 flex flex-col">
       {/* Header */}
-     
+
 
       <header className="bg-gradient-to-r from-[#1A1A1A] to-orange-500 shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -115,7 +115,7 @@ export default function Inicio() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6 text-center">
+        {/* <div className="bg-white rounded-xl shadow p-6 text-center">
           <h3 className="text-2xl font-semibold text-orange-500 mb-3 font-poppins">Nuestra Visión</h3>
           <p className="text-gray-700 max-w-3xl mx-auto">
             Ser líderes en la industria automotriz ofreciendo soluciones logísticas eficientes...
@@ -124,35 +124,63 @@ export default function Inicio() {
           <p className="text-gray-700 max-w-3xl mx-auto">
             Garantizar el abastecimiento rápido y preciso de piezas...
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-[#1A1A1A] to-orange-500 text-white py-10 mt-12 font-poppins" id="footer">
         <div className="max-w-screen-xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 text-sm">
           <div>
-            <h3 className="text-lg font-semibold mb-3">Enlaces</h3>
-            <ul className="space-y-2">
-              <li><a href="/inicio" className="hover:underline">Inicio</a></li>
-              <li><a href="/" className="hover:underline"></a></li>
-              <li><a href="/contacto" className="hover:underline">Contacto</a></li>
-              <li><a href="/" className="hover:underline"></a></li>
+            <h3 className="text-lg font-semibold mb-3">Ir a...</h3>
+            <ul className="space-y-2 text-white">
+              <li className="flex items-center gap-2">
+                <i className="fas fa-home text-orange-400"></i>
+                <a href="/inicio" className="hover:underline">Inicio</a>
+              </li>
             </ul>
+
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-3">Contacto</h3>
-            <ul className="space-y-2">
-              <li>📍 Dirección: Calle Falsa 123, Ciudad</li>
-              <li>📞 Tel: +54 9 351 123 4567</li>
-              <li>📧 Email: contacto@sistemadeposito.com</li>
+            <ul className="space-y-2 text-white">
+              <li className="flex items-center gap-2">
+                <i className="fas fa-map-marker-alt text-orange-400"></i>
+                Isla Verde 2152
+              </li>
+              <li className="flex items-center gap-2">
+                <i className="fas fa-phone-alt text-orange-400"></i>
+                +54 9 351 3374719
+              </li>
+              <li className="flex items-center gap-2">
+                <i className="fas fa-envelope text-orange-400"></i>
+                contacto@sistemadeposito.com
+              </li>
             </ul>
+
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-3">Síguenos</h3>
-            <ul className="space-y-2">
-              <li><a href="https://www.facebook.com/" target='_blanck' className="hover:underline">Facebook</a></li>
-              <li><a href="https://www.instagram.com/" target='_blanck' className="hover:underline">Instagram</a></li>
-              <li><a href="https://ar.linkedin.com/" target='_blanck' className="hover:underline">LinkedIn</a></li>
+            <h3 className="text-lg font-semibold mb-3 mx-8">Síguenos</h3>
+
+            <ul className="space-y-2 text-white flex gap-6">
+              <li className="flex items-center gap-2">
+                <i className="fab fa-facebook text-blue-600 text-3xl" aria-hidden="true"></i>
+
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">
+
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <i className="fab fa-instagram text-pink-500 text-3xl" aria-hidden="true"></i>
+                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">
+
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <i className="fab fa-linkedin text-blue-500 text-3xl" aria-hidden="true"></i>
+                <a href="https://ar.linkedin.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">
+
+                </a>
+              </li>
             </ul>
           </div>
         </div>
