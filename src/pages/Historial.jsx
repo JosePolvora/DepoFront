@@ -4,6 +4,7 @@ import axios from 'axios';
 function PaginaHistorial() {
   const [historialMovimientos, setHistorialMovimientos] = useState([]);
   const [ingresos, setIngresos] = useState([]);
+  const [egresos, setEgresos] = useState([]); // NUEVO
   const [planoUbicaciones, setPlanoUbicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,19 +14,22 @@ function PaginaHistorial() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [resHistorial, resIngresos, resPlanoUbicaciones] = await Promise.all([
+        const [resHistorial, resIngresos, resEgresos, resPlanoUbicaciones] = await Promise.all([
           axios.get('http://localhost:3000/api/historiales'),
           axios.get('http://localhost:3000/api/ingresos'),
+          axios.get('http://localhost:3000/api/egresos'), // NUEVO
           axios.get('http://localhost:3000/api/planosxubicaciones')
         ]);
 
         if (
           resHistorial.data.ok &&
           resIngresos.data.ok &&
+          resEgresos.data.ok && // NUEVO
           resPlanoUbicaciones.data.ok
         ) {
           setHistorialMovimientos(resHistorial.data.body);
           setIngresos(resIngresos.data.body);
+          setEgresos(resEgresos.data.body); // NUEVO
           setPlanoUbicaciones(resPlanoUbicaciones.data.body);
         } else {
           setError('Error en la respuesta del servidor');
@@ -89,10 +93,7 @@ function PaginaHistorial() {
             <table className="min-w-full bg-zinc-700 rounded-md text-white">
               <thead>
                 <tr>
-                  <th
-                    onClick={() => handleSort('fecha')}
-                    className="py-2 px-4 border-b border-zinc-600 text-left cursor-pointer"
-                  >
+                  <th onClick={() => handleSort('fecha')} className="py-2 px-4 border-b border-zinc-600 text-left cursor-pointer">
                     Fecha {sortBy === 'fecha' ? (sortAsc ? '▲' : '▼') : ''}
                   </th>
                   <th className="py-2 px-4 border-b border-zinc-600 text-left">Plano</th>
@@ -105,19 +106,15 @@ function PaginaHistorial() {
               </thead>
               <tbody>
                 {sortedHistorial.map((mov) => {
+                  console.log(mov);
                   const planoId = mov.plano_id;
                   const ubicacionId = mov.ubicacion_id;
 
-                  const stockActual = planoUbicaciones.find(
-                    (pu) => pu.plano_id === planoId && pu.ubicacion_id === ubicacionId
-                  )?.stock;
+                  const cantidad = mov.ingreso?.cantidad || mov.egreso?.cantidad || '-';
+                  const tipoMovimiento = mov.ingreso
+                    ? mov.ingreso.tipoMovimiento
+                    : mov.egreso?.tipoMovimiento || 'Desconocido';
 
-                  const ingresoRelacionado = ingresos.find(
-                    (ing) => ing.plano_id === planoId && ing.ubicacion_id === ubicacionId
-                  );
-
-                  const cantidad = ingresoRelacionado ? ingresoRelacionado.cantidad : '-';
-                  const tipoMovimiento = ingresoRelacionado ? ingresoRelacionado.tipoMovimiento : 'Desconocido';
 
                   const usuario = mov.usuario
                     ? `${mov.usuario.nombre} ${mov.usuario.apellido}`

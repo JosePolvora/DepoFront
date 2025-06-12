@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit } from 'lucide-react';
 import axios from 'axios';
@@ -7,8 +7,25 @@ export default function Consultapieza() {
     const [busqueda, setBusqueda] = useState('');
     const [resultados, setResultados] = useState([]);
     const [busquedaRealizada, setBusquedaRealizada] = useState(false);
+    const [sugerencias, setSugerencias] = useState([]);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchSugerencias = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/api/planos'); // Ruta que devuelve todos los planos
+                if (response.data.ok) {
+                    const planos = response.data.body.map(p => p.plano);
+                    setSugerencias(planos);
+                }
+            } catch (error) {
+                console.error('Error al obtener sugerencias de planos:', error);
+            }
+        };
+
+        fetchSugerencias();
+    }, []);
 
     const handleBuscar = async () => {
         setBusquedaRealizada(true);
@@ -32,12 +49,18 @@ export default function Consultapieza() {
                 <div className="flex gap-4">
                     <input
                         type="text"
+                        list="sugerenciasPlanos"
                         placeholder="Buscar por número de plano..."
                         className="flex-1 bg-zinc-700 text-white rounded-md border border-zinc-600 py-2 px-3"
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleBuscar()}
                     />
+                    <datalist id="sugerenciasPlanos">
+                        {sugerencias.map((plano, index) => (
+                            <option key={index} value={plano} />
+                        ))}
+                    </datalist>
                     <button
                         className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-black font-semibold py-2 px-4 rounded-md shadow-sm"
                         onClick={handleBuscar}
@@ -84,7 +107,7 @@ export default function Consultapieza() {
                                                             state: {
                                                                 plano,
                                                                 ubicacionActual: relacion.ubicacion,
-                                                                stockActual: relacion.stock, // ✅ pasamos el stock
+                                                                stockActual: relacion.stock,
                                                             },
                                                         })
                                                     }
@@ -111,7 +134,7 @@ export default function Consultapieza() {
                                                             state: {
                                                                 plano,
                                                                 ubicacionActual: null,
-                                                                stockActual: 0, // ✅ stock = 0 si no hay ubicaciones
+                                                                stockActual: 0,
                                                             },
                                                         })
                                                     }

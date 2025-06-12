@@ -57,6 +57,11 @@ function FormPlanoManual() {
     fetchDenominacion();
   }, [planoCodigo]);
 
+  useEffect(() => {
+    const ubic = ubicaciones.find(u => u.codigo === ubicacionCodigo);
+    setUbicacionId(ubic?.ubicacion_id || '');
+  }, [ubicacionCodigo, ubicaciones]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -69,20 +74,45 @@ function FormPlanoManual() {
       return;
     }
 
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const usuario_id = usuario?.id;
+
+    const payload = {
+      plano_id: planoId,
+      ubicacion_id: parseInt(ubicacionId),
+      cantidad: parseInt(cantidad),
+    };
+
+    let errores = [];
+    let ingresoId = null;
+
     try {
-      const usuario = JSON.parse(localStorage.getItem('usuario'));
-      const usuario_id = usuario?.id;
-
-      const payload = {
-        plano_id: planoId,
-        ubicacion_id: parseInt(ubicacionId),
-        cantidad: parseInt(cantidad),
-      };
-
       await axios.post('http://localhost:3000/api/planoxubicacion/actualizar-stock', payload);
-      await axios.post('http://localhost:3000/api/ingresos', payload);
-      await axios.post('http://localhost:3000/api/historiales', { ...payload, usuario_id });
+    } catch (err) {
+      console.error('Error al actualizar stock:', err);
+      errores.push('Actualizar stock');
+    }
 
+    try {
+      const resIngreso = await axios.post('http://localhost:3000/api/ingresos', payload);
+      ingresoId = resIngreso.data.body?.ingreso_id || null;
+    } catch (err) {
+      console.error('Error al registrar ingreso:', err);
+      errores.push('Registrar ingreso');
+    }
+
+    try {
+      await axios.post('http://localhost:3000/api/historiales', {
+        ...payload,
+        usuario_id,
+        ingreso_id: ingresoId,
+      });
+    } catch (err) {
+      console.error('Error al guardar historial:', err);
+      errores.push('Guardar historial');
+    }
+
+    if (errores.length === 0) {
       Swal.fire({
         icon: 'success',
         title: 'Operación exitosa',
@@ -95,21 +125,14 @@ function FormPlanoManual() {
       setUbicacionId('');
       setDenominacion('');
       setCantidad('');
-    } catch (err) {
-      console.error('Error en la operación:', err);
+    } else {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ocurrió un problema al guardar los datos. Por favor, intentá nuevamente.'
+        icon: 'warning',
+        title: 'Operación parcial',
+        html: `Se completó parcialmente. Fallaron las siguientes acciones:<br><ul>${errores.map(e => `<li>${e}</li>`).join('')}</ul>`
       });
     }
   };
-
-  // Buscar y asignar ubicaciónId cuando se escribe un código
-  useEffect(() => {
-    const ubic = ubicaciones.find(u => u.codigo === ubicacionCodigo);
-    setUbicacionId(ubic?.ubicacion_id || '');
-  }, [ubicacionCodigo, ubicaciones]);
 
   return (
     <div className="bg-zinc-900 min-h-screen flex justify-center items-center p-6">
