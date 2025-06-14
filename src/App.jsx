@@ -14,6 +14,7 @@ import RutasProtegidas from './components/RutasProtegidas';
 import FormUsuarios from './components/FormUsuarios';
 import AdminUsuarios from "./components/AdminUsuarios";
 import EditarPlano from './pages/EditarPlano';
+import GenerarQR from './pages/GenerarQR';
 
 
 function App() {
@@ -44,6 +45,8 @@ function App() {
         <Route path="/editarplano" element={<EditarPlano />} />
         <Route path="/editarplano/:id" element={<EditarPlano />} />
         
+        <Route path="/generarqr" element={<GenerarQR />} />
+        <Route path="/generarqr/:plano" element={<GenerarQR />} />
 
       </Route>
 
